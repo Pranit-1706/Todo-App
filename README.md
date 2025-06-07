@@ -25,13 +25,16 @@ A simple and efficient Todo App built using **Node.js**, **Express**, and **Mong
    cd Todo-App
 
 2. **Install dependencies**
+    ```bash
     npm install
 
 3. **Create a .env file**
+    ```bash
     MONGO_URI=your_mongodb_connection_string
     JWT_SECRET="any string"
 
 4. **Start the app**
+    ```bash
     npm start
 
 5. **Visit**
