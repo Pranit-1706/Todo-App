@@ -12,10 +12,12 @@ A simple and efficient Todo App built using **Node.js**, **Express**, and **Mong
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript (Vanilla or with framework)
+- **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Node.js, Express.js
 - **Database**: MongoDB (Mongoose ODM)
-
+- **Authentication**: JWT (JSON Web Token)  
+- **Password Hashing**: bcrypt 
+- **Validation**: Zod 
 
 ## 📦 Setup Instructions
 
