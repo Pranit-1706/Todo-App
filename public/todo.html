@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Application</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="todo-app">
+        <header class="app-header">
+            <h1 class="app-title">My Todo List</h1>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </header>
+        
+        <div class="todo-input-container">
+            <input type="text" placeholder="Enter a new task" id="title">
+            <button class="add-button" onclick="addtodo()">+ Add</button>
+        </div>
+        
+        <div id="msg" class="message"></div>
+        
+        <div class="todo-grid" id="todos">
+            <!-- Todos will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        async function wait(ms){
+            return new Promise(resolve => setInterval(resolve,ms));
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "index.html";
+        }
+        async function addtodo(){
+            const title = document.getElementById("title").value;
+            const msgDiv = document.getElementById("msg");
+
+            if(!title){
+                msgDiv.innerHTML="<p>Enter a task</p>"
+                await wait(1000);
+                msgDiv.innerHTML="";
+                return;
+            }
+            msgDiv.innerHTML= "<p>creating todo</p>"
+            await wait(500);
+            try{
+                const response = await axios.post("/todo",{
+                    title:title},{
+                    headers:{
+                        token:localStorage.getItem("token")
+                    }
+                })
+                msgDiv.innerHTML= "<p>Todo Created</p>"
+            }catch(e){
+                console.log("not done")
+                msgDiv.innerHTML = e.response.data.msg
+            }
+            await wait(500);
+            document.getElementById("todos").innerHTML="";
+            gettodos();
+            msgDiv.innerHTML="";
+        }
+
+        async function Done(id){
+            try{
+                const response= await axios.delete(`/todo/${id}`,{
+                    headers:{
+                        token:localStorage.getItem("token")
+                    }
+                })
+                document.getElementById("todos").innerHTML="";
+                gettodos();
+                document.getElementById("msg").innerHTML = "<p>Todo deleted successfully</p>";
+                setTimeout(() => document.getElementById("msg").innerHTML = "", 1000);
+            }catch(e){
+                document.getElementById("msg").innerHTML= e.response.data.msg;
+                setTimeout(() => document.getElementById("msg").innerHTML = "", 1000);
+            }
+        }
+
+        async function gettodos(){
+            try{
+                const response=await axios.get("/todos",{
+                    headers:{
+                        token:localStorage.getItem("token")
+                    }
+                })
+                
+                const todos = response.data.todos;
+                const container = document.getElementById("todos");
+
+                todos.forEach(todo => {
+                    const todoDiv = document.createElement("div");
+                    todoDiv.classList.add("box2");
+                    todoDiv.innerHTML= `<p>${todo.title}</p><button onclick="Done('${todo._id}')">Done</button>`
+
+                    container.appendChild(todoDiv);
+                });
+            }catch(e){
+                document.getElementById("msg").innerHTML="<p>Failed to get todos</p>"
+            }
+        }
+        gettodos();
+    </script>
+</body>
+</html>

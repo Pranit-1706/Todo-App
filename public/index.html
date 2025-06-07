@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="0; URL='index.html'"> -->
+    <title>Todo Application</title>
+    <link rel="stylesheet" href="./style.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <h1 class="auth-title">Sign Up</h1>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" placeholder="John Doe" id="signupname">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="john@xyz.com" id="signupemail">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Password" id="signuppassword">
+                </div>
+                <button class="auth-button" onclick="signup()">Create Account</button>
+                <div id="signupmsg" class="message"></div>
+            </div>
+        </div>
+
+        <div class="auth-card">
+            <h1 class="auth-title">Sign In</h1>
+            <div class="auth-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" placeholder="john@xyz.com" id="signinemail">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="Password" id="signinpassword">
+                </div>
+                <button class="auth-button" onclick="signin()">Login</button>
+                <div id="signinmsg" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        async function wait(ms){
+            return new Promise(resolve => setInterval(resolve,ms));
+        }
+    
+        function check(){
+            if (localStorage.getItem("token")) {
+                window.location.href = "todo.html";
+            }
+        }
+        check();
+
+        async function signup(){
+            const name = document.getElementById("signupname").value
+            const email = document.getElementById("signupemail").value
+            const password= document.getElementById("signuppassword").value
+            const msgDiv = document.getElementById("signupmsg");
+
+            msgDiv.innerHTML = "";
+            if (!name || !email || !password) {
+                msgDiv.innerHTML = "<p>Please fill in all fields</p>";
+                return;
+            }
+            try{
+                const response = await axios.post("/signup",{
+                    name,
+                    email,
+                    password
+                })
+                msgDiv.innerHTML = "<p>"+response.data.msg+"</p>"
+            }catch(e){
+                msgDiv.innerHTML = "<p>"+e.response.data.msg+"</p>"
+            }
+            await wait(1000)
+            msgDiv.innerHTML="";
+            document.getElementById("signupname").value="";
+            document.getElementById("signupemail").value="";
+            document.getElementById("signuppassword").value="";
+        }
+
+        async function signin(){
+            const email = document.getElementById("signinemail").value
+            const password= document.getElementById("signinpassword").value
+            const msgDiv = document.getElementById("signinmsg");
+
+            msgDiv.innerHTML = "";
+            if (!email || !password) {
+                msgDiv.innerHTML = "<p>Please fill in all fields</p>";
+                return;
+            }
+            try{
+                const response = await axios.post("/signin",{
+                    email,
+                    password
+                })
+                msgDiv.innerHTML = "<p>Signing in</p>"
+                localStorage.setItem("token", response.data.token);
+                setTimeout(() => {
+                        window.location.href = "todo.html";
+                    }, 1000);
+            }catch(e){
+                msgDiv.innerHTML = "<p>"+e.response.data.msg+"</p>"
+            }
+            await wait(1000)
+            msgDiv.innerHTML="";
+            document.getElementById("signupemail").value="";
+            document.getElementById("signuppassword").value="";
+        }
+    </script>
+</body>
+</html>
